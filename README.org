@@ -1,0 +1,144 @@
+#+OPTIONS: toc:nil
+
+#+begin_abstract
+
+#+end_abstract
+* Lightning Network Gossip
+
+Payments in the Lightning network are source-routed, meaning that the sender
+of a payment is responsible for finding a route from itself to the payment
+rrecipient. This is necessary due to the use of onion routing, based on the
+Sphinx construction [sphinx2009], in which the data to be transferred, i.e.,
+the payment, is sent with an associated routing packet that specifies the
+route the data should be transferred over. In Lightning each hop on a route
+must correspond to a channel that is used to forward the payment, in the form
+of an HTLC, along with the routing onion.
+
+In order to enable nodes to compute a route to the payment recipient, the
+nodes exchange information about the topology of the network, with edges
+corresponding to the channels, and vertices corresponding to the nodes in the
+network. The exchange of information is specified in the gossip protocol
+[gossip-spec], and is based on the channel endpoints broadcasting three types
+of messages to the network:
+
+ - ~channel_announcement~: signed by both endpoints and unique for each
+   channel. It notifies nodes about the existence of a channel, where the
+   funding transaction is in the blockchain and features that are supported on
+   the channel.
+ - ~channel_update~: sent by one of the endpoints, and is specific for the
+   outgoing direction from that endpoint. It specifies the parameters to use
+   when traversing the channel in the specified direction. Notice that each
+   channel therefore has two channel directions, which are handled
+   independently. These half-channels can be updated by sending a new message
+   with a higher timestamp field.
+ - ~node_announcement~: sent by a node that has at least one active channel,
+   and specifies the metadata of the node. In particular it signals what
+   protocol extensions the node can understand. Similar a node can send
+   multiple announcements, that are then disambiguated through the timestamp
+   field.
+
+* Data Collection
+The data collection is based on a number of c-lightning nodes, that
+synchronize their view of the topology with peers by exchanging the gossip
+messages. Internally c-lightning will deduplicate messages, discard outdated
+~node_announcements~ and ~channel_updates~, and then apply them to the
+internal view. In order to persist the view across restarts, the node also
+writes the raw messages, along some internal messages, to a file called the
+~gossip_store~. The node compacts the ~gossip_store~ file from time to time in
+order to limit its growth. Compaction consists of rewriting the file, skipping
+messages that have been superceded in the meantime.
+
+We have built a number of tools that allow the tracking of the ~gossip_store~
+file, and persisting the messages in order to retain them even after
+compaction. From the raw messages it is then possible to generate number of
+derivative formats, that allow inspecting the state of the network at any
+point during the runtime of the collection.
+
+** TODO File Format
+
+* Datasets
+
+** TODO Available Datasets
+
+|--|
+|--|
+
+** Data Coverage
+
+We strive to provide the best possible datasets to researchers. The gossip
+mechanism in Lightning is however purposefully lossy:
+
+ - Old gossip messages are not retained by nodes, since they are likely out of
+   date or have been superceded by a newer message, and no longer useful for
+   the operation of the node.
+ - A [[https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md#rationale-8][staggered broadcast]] mechanism is used to limit the reach of redundant
+   messages, both to protect the nodes from disclosing too much fine-grained
+   information about themselves, and to protect the network from spam.
+ - Messages may not be forwarded to each node in the network, for example if a
+   subset of nodes deems the message invalid.
+
+The first point is likely the most important, since it gives us a unique
+vantage point, having collected this information from the very beginning of
+the mainnet deployment. However, initially the collection was rather
+coarse-grained and some information may have been missed.
+
+While collecting the gossip information we have changed format and methods a
+number of times, resulting in datasets that do not share the same format and
+coverage. Our current methodology ensures that we capture the information in
+its raw state, after applying only the deduplication filtering that
+c-lightning performs to protect against outdated data and spam from peers.
+
+For collected information that predates the current collection methodology we
+are still working on updating and annotating it in order to backfill the
+datasets. This should provide us with the most complete picture of the
+evolution of the Lightning network ever collected.
+
+Our formats and methodologies changed in the following ways:
+
+ - /Early 2018 - April 2018/: a cronjob runs ~lightning-cli listchannels~ and
+   stores the resulting JSON object on disk.
+ - /April 2018 - August 2019/: a cronjob calls ~lightning-cli listchanels~ and
+   processes the results. For each channel and state a timespan is generated
+   during which the channel remained stable (no state change). Results
+   matching the last previous timespan are extended, changes to the channel
+   state result in a new timespan being created.
+ - /August 2019 -- now/: the raw protocol messages are extracted from the
+   c-lightning ~gossip_store~ file, deduplicated and added to the
+   database.
+
+Sadly it is unlikely that the high-fidelity format can be recovered completely
+from the earlier formats, e.g., signatures cannot be recovered from the stored
+information. However it might be possible to recreate parts of the structural
+information from the JSON dumps and the timespans. We will eventually make
+this data public as well, as soon as we have confirmed it is sufficiently free
+of errors.
+
+* Citing a Dataset in your Publication
+
+If you found these datasets useful or would like others to reproduce your
+research starting from the same dataset, please use the below BibTeX entry to
+reference this project, or a specific dataset:
+
+#+begin_src bibtex
+@misc{lngossip,
+  title = {Lightning Network Research \mdash; Topology Datasets},
+  author = {Decker, Christian},
+  howpublished = {\url{https://github.com/lnresearch/topology}},
+  note = {Accessed: 2020-10-01}
+}
+#+end_src
+
+In case you'd like to reference a specific dataset, please add the
+URL-fragment ~#dataset-2020-10-01~ to the ~howpublished~ URL. This will ensure
+that visitors jump in to the above table, allowing them to directly download
+the dataset.
+
+* TODO Publications based on these Datasets
+* Bibliography
+
+[sphinx2009]: Danezis, George & Goldberg, Ian. (2009). 
+              Sphinx: A Compact and Provably Secure Mix Format.
+              IACR Cryptology ePrint Archive. 2008. 269-282.
+              10.1109/SP.2009.15. 
+[gossip-spec]: https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md
+
