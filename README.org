@@ -3,6 +3,9 @@
 #+begin_abstract
 
 #+end_abstract
+
+<a href="https://doi.org/10.5281/zenodo.4088530"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4088530.svg" alt="DOI"></a>
+
 * Lightning Network Gossip
 
 Payments in the Lightning network are source-routed, meaning that the sender
@@ -129,7 +132,8 @@ reference this project, or a specific dataset:
   title = {Lightning Network Research \mdash; Topology Datasets},
   author = {Decker, Christian},
   howpublished = {\url{https://github.com/lnresearch/topology}},
-  note = {Accessed: 2020-10-01}
+  note = {Accessed: 2020-10-01},
+  doi = {10.5281/zenodo.4088530}
 }
 #+end_src
 
