@@ -4,7 +4,7 @@
 
 #+end_abstract
 
-<a href="https://doi.org/10.5281/zenodo.4088530"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4088530.svg" alt="DOI"></a>
+[[https://zenodo.org/badge/DOI/10.5281/zenodo.4088530.svg]]
 
 * Lightning Network Gossip
 
