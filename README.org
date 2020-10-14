@@ -58,10 +58,15 @@ point during the runtime of the collection.
 
 * Datasets
 
-** TODO Available Datasets
+** Available Datasets
+The following table lists all available datasets and information about each
+dataset.
 
-|--|
-|--|
+|-------------------------+------------------------------------------------------------------|
+| Link / Filename         | SHA256 Checksum                                                  |
+|-------------------------+------------------------------------------------------------------|
+| [[https://storage.googleapis.com/lnresearch/gossip-20201014.gsp.bz2][gossip-20201014.gsp.bz2]] | 8c507298d2d2e7f5577ae9484986fc05630ef0bd2b59da39a60b674fd743713c |
+|-------------------------+------------------------------------------------------------------|
 
 ** Data Coverage
 
@@ -136,9 +141,6 @@ the dataset.
 * TODO Publications based on these Datasets
 * Bibliography
 
-[sphinx2009]: Danezis, George & Goldberg, Ian. (2009). 
-              Sphinx: A Compact and Provably Secure Mix Format.
-              IACR Cryptology ePrint Archive. 2008. 269-282.
-              10.1109/SP.2009.15. 
+[sphinx2009]: Danezis, George & Goldberg, Ian. (2009)., Sphinx: A Compact and Provably Secure Mix Format., IACR Cryptology ePrint Archive. 2008. 269-282., 10.1109/SP.2009.15. 
 [gossip-spec]: https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md
 
