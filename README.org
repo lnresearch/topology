@@ -57,7 +57,39 @@ compaction. From the raw messages it is then possible to generate number of
 derivative formats, that allow inspecting the state of the network at any
 point during the runtime of the collection.
 
-** TODO File Format
+** File Format
+In order to minimize the size of the datasets a simple custom file format. The
+file format consists of a header and a stream of raw gossip messages as they
+were exchanged over the wire. The header consists of a 3-byte prefix with the
+value ~GSP~ followed by a single byte version. Currently only version ~0x01~
+is defined.
+
+Each message in the raw message stream is prefixed by its length, encoded as
+[[https://btcinformation.org/en/developer-reference#compactsize-unsigned-integers][~CompactSize~]] integer.
+
+The following code snippet is based on the [[https://pypi.org/project/pyln-proto/][pyln-proto]] Python Package and can
+be used to load iterate through the messages in a BZ2 compressed dataset:
+
+#+begin_src python
+from pyln.proto.primitives import varint_decode
+import bz2
+
+def read_dataset(filename: str):
+    with bz2.open(filename, 'rb') as f:
+        header = f.read(4)
+        print(header[3])
+        assert(header[:3] == b'GSP' and header[3] == 1)
+        while True:
+            length = varint_decode(f)
+            msg = f.read(length)
+            if len(msg) != length:
+                raise ValueError(f"Incomplete message read from {filename}")
+
+            yield msg
+#+end_src
+
+For details on the gossip messages themselves please refer to the [[https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md][Lightning
+Network Specification]].
 
 * Datasets
 
