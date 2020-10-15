@@ -153,6 +153,6 @@ the dataset.
 
 * Bibliography
 
-[sphinx2009]: Danezis, George & Goldberg, Ian. (2009)., Sphinx: A Compact and Provably Secure Mix Format., IACR Cryptology ePrint Archive. 2008. 269-282., 10.1109/SP.2009.15. 
-[gossip-spec]: https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md
+ - [sphinx2009]: Danezis, George & Goldberg, Ian. (2009)., Sphinx: A Compact and Provably Secure Mix Format., IACR Cryptology ePrint Archive. 2008. 269-282., 10.1109/SP.2009.15. 
+ - [gossip-spec]: https://github.com/lightningnetwork/lightning-rfc/blob/master/07-routing-gossip.md
 
