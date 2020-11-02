@@ -101,6 +101,7 @@ dataset.
 | Link / Filename         | SHA256 Checksum                                                  |
 |-------------------------+------------------------------------------------------------------|
 | [[https://storage.googleapis.com/lnresearch/gossip-20201014.gsp.bz2][gossip-20201014.gsp.bz2]] | 8c507298d2d2e7f5577ae9484986fc05630ef0bd2b59da39a60b674fd743713c |
+| [[https://storage.googleapis.com/lnresearch/gossip-20201102.gsp.bz2][gossip-20201102.gsp.bz2]] | e6628e77907406288f476d5c86f02fb310474c430eb980e0232a520c98d390aa |
 |-------------------------+------------------------------------------------------------------|
 
 ** Data Coverage

@@ -1,0 +1,4 @@
+pyln-proto==0.8.4
+click==7.1.2
+networkx==2.5
+tqdm==4.50.2
