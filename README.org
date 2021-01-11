@@ -10,7 +10,7 @@
 
 Payments in the Lightning network are source-routed, meaning that the sender
 of a payment is responsible for finding a route from itself to the payment
-rrecipient. This is necessary due to the use of onion routing, based on the
+recipient. This is necessary due to the use of onion routing, based on the
 Sphinx construction [sphinx2009], in which the data to be transferred, i.e.,
 the payment, is sent with an associated routing packet that specifies the
 route the data should be transferred over. In Lightning each hop on a route
