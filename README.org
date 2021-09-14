@@ -104,6 +104,7 @@ dataset.
 | [[https://storage.googleapis.com/lnresearch/gossip-20201102.gsp.bz2][gossip-20201102.gsp.bz2]] | e6628e77907406288f476d5c86f02fb310474c430eb980e0232a520c98d390aa |
 | [[https://storage.googleapis.com/lnresearch/gossip-20201203.gsp.bz2][gossip-20201203.gsp.bz2]] | fa323aae6b1c4d3d659abab8ec42cbbe81dded2ed7b3c526d3bf85f03d7b93cc |
 | [[https://storage.googleapis.com/lnresearch/gossip-20210104.gsp.bz2][gossip-20210104.gsp.bz2]] | 992199372dfb5cb1fa5e305c5ef4f2604f591798d522fc0576dc8de32315c79b |
+| [[https://storage.googleapis.com/lnresearch/gossip-20210908.gsp.bz2][gossip-20210908.gsp.bz2]] | 6844cd2eb1297de0989fc0860624ec910ecc7a6159e15f04aa1d17d72d9d6bcf |
 |-------------------------+------------------------------------------------------------------|
 
 ** Data Coverage
@@ -140,7 +141,7 @@ Our formats and methodologies changed in the following ways:
 
  - /Early 2018 - April 2018/: a cronjob runs ~lightning-cli listchannels~ and
    stores the resulting JSON object on disk.
- - /April 2018 - August 2019/: a cronjob calls ~lightning-cli listchanels~ and
+ - /April 2018 - August 2019/: a cronjob calls ~lightning-cli listchannels~ and
    processes the results. For each channel and state a timespan is generated
    during which the channel remained stable (no state change). Results
    matching the last previous timespan are extended, changes to the channel
