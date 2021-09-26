@@ -1,7 +1,7 @@
 import click
 import bz2
 from pyln.proto.primitives import varint_decode
-from cli.parser import parse
+from .parser import parse
 
 
 class DatasetStream:

@@ -1,9 +1,9 @@
 import sys
 import time
-from cli.common import DatasetFile
+from .common import DatasetFile
 import click
 import networkx as nx
-from cli.parser import ChannelAnnouncement, ChannelUpdate, NodeAnnouncement
+from .parser import ChannelAnnouncement, ChannelUpdate, NodeAnnouncement
 from tqdm import tqdm
 from datetime import datetime
 

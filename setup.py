@@ -23,7 +23,7 @@ setup(name='lntopo',
       zip_safe=True,
       entry_points = {
           'console_scripts': [
-              'lntopo-cli = cli.__main__:cli',
+              'lntopo-cli = lntopo.__main__:cli',
           ],
       },
       install_requires=requirements

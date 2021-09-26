@@ -1,5 +1,5 @@
 import click
-from cli.timemachine import timemachine
+from .timemachine import timemachine
 
 
 @click.group()
