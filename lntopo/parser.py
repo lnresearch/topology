@@ -42,6 +42,16 @@ class ChannelAnnouncement(object):
             na=na, nb=nb, short_channel_id=self.short_channel_id
         )
 
+    def __json__(self):
+        return {
+            '_type': 'channel_announcement',
+            'scid': self.short_channel_id,
+            'features': hexlify(self.features).decode('ASCII'),
+            'node_id_1': hexlify(self.node_ids[0]).decode('ASCII'),
+            'node_id_2': hexlify(self.node_ids[1]).decode('ASCII'),
+            'chain_hash': hexlify(self.chain_hash).decode('ASCII'),
+        }
+
 
 class ChannelUpdate(object):
     def __init__(self):
@@ -56,6 +66,21 @@ class ChannelUpdate(object):
         self.fee_base_msat = None
         self.fee_proportional_millionths = None
         self.htlc_maximum_msat = None
+
+    def __json__(self):
+        return {
+            '_type': 'channel_update',
+            'scid': self.short_channel_id,
+            'timestamp': self.timestamp,
+            'message_flags': hexlify(self.message_flags).decode('ASCII'),
+            'channel_flags': hexlify(self.channel_flags).decode('ASCII'),
+            'cltv_expiry_delta': self.cltv_expiry_delta,
+            'htlc_minimum_msat': self.htlc_minimum_msat,
+            'fee_base_msat': self.fee_base_msat,
+            'fee_proportional_millionths': self.fee_proportional_millionths,
+            'htlc_maximum_msat': self.htlc_maximum_msat,
+            'chain_hash': hexlify(self.chain_hash).decode('ASCII'),
+        }
 
     @property
     def short_channel_id(self):
@@ -153,6 +178,16 @@ class NodeAnnouncement(object):
             and self.rgb_color == other.rgb_color
             and self.alias == other.alias
         )
+
+    def __json__(self):
+        return {
+            '_type': 'node_announcement',
+            'features': self.features.hex(),
+            'timestamp': self.timestamp,
+            'node_id': self.node_id.hex(),
+            'rgb_color': self.rgb_color.hex(),
+            'addresses': []  # TODO Add missing addresses
+        }
 
 
 def parse(b):
