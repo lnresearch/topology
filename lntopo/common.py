@@ -1,7 +1,9 @@
 import click
 import bz2
 from pyln.proto.primitives import varint_decode
-from .parser import parse
+from lntopo.parser import parse
+from pathlib import Path
+import struct
 
 
 class DatasetStream:
@@ -46,3 +48,32 @@ class DatasetFile(click.File):
     def convert(self, value, param, ctx):
         f = bz2.open(value, "rb") if value.endswith(".bz2") else open(value, "rb")
         return DatasetStream(f, self.decode)
+
+class GossipStore:
+    """A gossip_store file allowing streaming of messages.
+    """
+
+    def __init__(self, path: Path):
+        self.path = path
+
+    def __iter__(self):
+        with open(self.path, 'rb') as f:
+            self.version, = struct.unpack("!B", f.read(1))
+            while True:
+                hdr = f.read(8)
+                if len(hdr) < 8:
+                    break
+
+                length, crc = struct.unpack("!II", hdr)
+                if self.version > 3:
+                    f.read(4)  # Throw away the CRC
+
+                # deleted = (length & 0x80000000 != 0)
+                # important = (length & 0x40000000 != 0)
+                length = length & (~0x80000000) & (~0x40000000)
+                msg = f.read(length)
+                typ, = struct.unpack("!H", msg[:2])
+                if self.version <= 3 and typ in [4096, 4097, 4098]:
+                    msg = msg[4:]
+
+                yield msg
