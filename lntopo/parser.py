@@ -230,15 +230,19 @@ def parse_address(b):
 
     if a.typ == 1:
         a.addr = b.read(4)
+        (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 2:
         a.addr = b.read(16)
+        (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 3:
         a.addr = b.read(10)
+        (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 4:
         a.addr = b.read(35)
+        (a.port,) = struct.unpack("!H", b.read(2))
     else:
-        raise ValueError("Unknown address type {typ}".format(typ=a.typ))
-    (a.port,) = struct.unpack("!H", b.read(2))
+        a.addr = b.getvalue()[1:]
+        a.port = None
     return a
 
 
