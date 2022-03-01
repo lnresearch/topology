@@ -145,5 +145,5 @@ def restore(dataset, timestamp=None, fmt='dot'):
             print(line)
 
     elif fmt == 'graphml':
-        for line in nx.generate_graphml(g):
+        for line in nx.generate_graphml(g, named_key_ids=True, edge_id_from_attribute='scid'):
             print(line)
