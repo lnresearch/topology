@@ -186,6 +186,7 @@ the dataset.
  - Zabka, Philipp, et al., /Node Classification and Geographical Analysis of
    the Lightning Cryptocurrency Network/, 22nd International Conference on
    Distributed Computing and Networking (ICDCN), Nara, Japan, January 2021. [[https://www.univie.ac.at/ct/stefan/icdcn21ln.pdf][PDF]]
+ - Pietrzak, Krzysztof et al., /LightPIR: Privacy-Preserving Route Discovery for Payment Channel Networks/, arXiv [[https://arxiv.org/pdf/2104.04293][PDF]]
 
 * Bibliography
 
