@@ -6,6 +6,8 @@ import networkx as nx
 from .parser import ChannelAnnouncement, ChannelUpdate, NodeAnnouncement
 from tqdm import tqdm
 from datetime import datetime
+import json
+from networkx.readwrite import json_graph
 
 
 @click.group()
@@ -16,7 +18,7 @@ def timemachine():
 @timemachine.command()
 @click.argument("dataset", type=DatasetFile())
 @click.argument("timestamp", type=int, required=False)
-@click.option('--fmt', type=click.Choice(['dot', 'gml', 'graphml'], case_sensitive=False))
+@click.option('--fmt', type=click.Choice(['dot', 'gml', 'graphml', 'json'], case_sensitive=False))
 def restore(dataset, timestamp=None, fmt='dot'):
     """Restore reconstructs the network topology at a specific time in the past.
 
@@ -147,3 +149,6 @@ def restore(dataset, timestamp=None, fmt='dot'):
     elif fmt == 'graphml':
         for line in nx.generate_graphml(g, named_key_ids=True, edge_id_from_attribute='scid'):
             print(line)
+
+    elif fmt == 'json':
+        print(json.dumps(json_graph.adjacency_data(g)))
