@@ -152,7 +152,8 @@ class Address(object):
             4: "torv3",
         }
 
-        return f"{protos[self.typ]}://{addr}:{self.port}"
+        proto = protos.get(self.typ, 'UNKNOWN')
+        return f"{proto}://{addr}:{self.port}"
 
 
 class NodeAnnouncement(object):
