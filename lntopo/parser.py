@@ -3,6 +3,7 @@ from binascii import hexlify
 
 import io
 import struct
+import ipaddress
 
 
 class ChannelAnnouncement(object):
@@ -269,18 +270,43 @@ def parse_address(b):
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 2:
         a.addr = b.read(16)
+        a.addr = format(ipaddress.IPv6Address(a.addr))
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 3:
         a.addr = b.read(10)
+        a.addr = to_base_32(a.addr)
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 4:
         a.addr = b.read(35)
+        a.addr = to_base_32(a.addr)
         (a.port,) = struct.unpack("!H", b.read(2))
     else:
         a.addr = b.getvalue()[1:]
         a.port = None
     return a
 
+# https://github.com/alexbosworth/bolt07/blob/519c94a7837e687bf7478a74779d5ea493a76a44/addresses/encode_base32.js
+def to_base_32(addr):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz234567'
+    byte = 8
+    lastIndex = 31
+    word = 5
+    bits = 0
+    base32 = ''
+    value = 0
+
+    for char in addr:
+        bits += byte
+        value = (value << byte) | char
+
+        while bits >= word:
+            base32 += alphabet[(value >> (bits - word)) & lastIndex]
+            bits -= word
+
+    if bits > 0:
+        base32 += alphabet[(value << (word - bits)) & lastIndex]
+    
+    return base32
 
 def parse_node_announcement(b):
     if not isinstance(b, io.BytesIO):
