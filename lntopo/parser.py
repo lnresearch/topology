@@ -270,15 +270,15 @@ def parse_address(b):
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 2:
         a.addr = b.read(16)
-        a.addr = format(ipaddress.IPv6Address(a.addr))
+        a.addr = '[' + format(ipaddress.IPv6Address(a.addr)) + ']'
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 3:
         a.addr = b.read(10)
-        a.addr = to_base_32(a.addr)
+        a.addr = to_base_32(a.addr) + '.onion'
         (a.port,) = struct.unpack("!H", b.read(2))
     elif a.typ == 4:
         a.addr = b.read(35)
-        a.addr = to_base_32(a.addr)
+        a.addr = to_base_32(a.addr) + '.onion'
         (a.port,) = struct.unpack("!H", b.read(2))
     else:
         a.addr = b.getvalue()[1:]
