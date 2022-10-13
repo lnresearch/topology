@@ -105,7 +105,6 @@ dataset.
 | [[https://storage.googleapis.com/lnresearch/gossip-20201203.gsp.bz2][gossip-20201203.gsp.bz2]] | fa323aae6b1c4d3d659abab8ec42cbbe81dded2ed7b3c526d3bf85f03d7b93cc |
 | [[https://storage.googleapis.com/lnresearch/gossip-20210104.gsp.bz2][gossip-20210104.gsp.bz2]] | 992199372dfb5cb1fa5e305c5ef4f2604f591798d522fc0576dc8de32315c79b |
 | [[https://storage.googleapis.com/lnresearch/gossip-20210908.gsp.bz2][gossip-20210908.gsp.bz2]] | 0ba0b31c12c4aec7f1255866acef485e239d54dedde99f4905cf869ec57804c1 |
-| [[https://storage.googleapis.com/lnresearch/gossip-20220719.gsp.bz2][gossip-20220719.gsp.bz2]] | 3d1e227dbde002f059c5ac331035f2a58cb3ce8f76dba95979592e4945f8afe2 |
 | [[https://storage.googleapis.com/lnresearch/gossip-20220823.gsp.bz2][gossip-20220823.gsp.bz2]] | cb260b0d7d3633db3b267256e43b974d1ecbcd403ab559a80f5e80744578777d |
 |-------------------------+------------------------------------------------------------------|
 
