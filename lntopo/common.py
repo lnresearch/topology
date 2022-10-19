@@ -21,23 +21,30 @@ class DatasetStream:
         return self
 
     def __next__(self):
-        pos = self.stream.tell()
-        length = varint_decode(self.stream)
+        
+        try:
+        
+            pos = self.stream.tell()
+            length = varint_decode(self.stream)
 
-        if length is None:
-            raise StopIteration()
+            if length is None:
+                raise StopIteration()
 
-        msg = self.stream.read(length)
-        if len(msg) != length:
-            raise ValueError(
-                "Error reading dataset at {pos}: incomplete read of {length} bytes, only got {mlen} bytes".format(
-                    pos=pos, length=length, mlen=len(msg)
+            msg = self.stream.read(length)
+            if len(msg) != length:
+                raise ValueError(
+                    "Error reading dataset at {pos}: incomplete read of {length} bytes, only got {mlen} bytes".format(
+                        pos=pos, length=length, mlen=len(msg)
+                    )
                 )
-            )
-        if not self.decode:
-            return msg
+            if not self.decode:
+                return msg
 
-        return parse(msg)
+            return parser.parse(msg)
+
+        except Exception as ex:
+            
+            return ''
 
 
 class DatasetFile(click.File):
