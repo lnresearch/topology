@@ -144,7 +144,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
             else:
                 raise Exception("ERROR: unknown scid format.")
            
-           if opposite_scid not in channels:
+            if opposite_scid not in channels:
                 unmatched.append(scid)
 
         if fix_missing == "recover":
