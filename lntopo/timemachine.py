@@ -9,6 +9,8 @@ from datetime import datetime
 import json
 from networkx.readwrite import json_graph
 import requests
+import os
+import csv 
 
 @click.group()
 def timemachine():
@@ -35,6 +37,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
     cutoff = timestamp - 2 * 7 * 24 * 3600
     channels = {}
     nodes = {}
+    cache_file = "./data/channels_cache.csv"
 
     # Some target formats do not suport UTF-8 aliases.
     codec = 'UTF-8' if fmt in ['dot'] else 'ASCII'
@@ -130,7 +133,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
             "timestamp that is covered by the dataset."
         )
         sys.exit(1)
-    
+
     if fix_missing is not None:
         # If fix_missing is set, find channels that don't have edge data for both directions
         unmatched = []
@@ -144,28 +147,46 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
             else:
                 raise Exception("ERROR: unknown scid format.")
            
-           if opposite_scid not in channels:
+            if opposite_scid not in channels:
                 unmatched.append(scid)
 
         if fix_missing == "recover":
-            # Attempt to recover the missing edges using a Lightning explorer
-            for scid in tqdm(unmatched, desc="Retrieving information for missing edges from 1ML.com"):
-                scid_elements = [ int(i) for i in scid[:-2].split("x") ]
-                converted_scid = scid_elements[0] << 40 | scid_elements[1] << 16 | scid_elements[2]
-                url = "https://1ml.com/channel/" + str(converted_scid) + "/json"
-                resp = requests.get(url)
-                
-                if resp.status_code == 200:
-                    chan_info = resp.json()
+            # Attempt to recover missing edges
+            if os.path.exists(cache_file) and os.stat(cache_file).st_size > 0:
+                with open(cache_file, 'r') as f:
+                    reader = csv.reader(f)
+                    channels_cache = {rows[0]:json.loads(rows[1]) for rows in reader}
+            else:
+                channels_cache = dict()
+
+            for scid in tqdm(unmatched, desc="Attempting to recover missing edges"):
+                undirected_scid = scid[:-2]
+                if undirected_scid in channels_cache:
+                    # If possible, retrieve edge data from the cache file
+                    recovered_chan = channels_cache[undirected_scid]
                 else:
-                    raise Exception("ERROR: unable to retrieve channel.")
-                
+                    # Else, request edge data from a LN explorer and save it in the cache file
+                    scid_elements = [ int(i) for i in undirected_scid.split("x") ]
+                    converted_scid = scid_elements[0] << 40 | scid_elements[1] << 16 | scid_elements[2]
+                    url = "https://1ml.com/channel/" + str(converted_scid) + "/json"
+                    resp = requests.get(url)
+
+                    if resp.status_code == 200:
+                        recovered_chan = resp.json()
+                    else:
+                        raise Exception("ERROR: unable to retrieve channel.")
+                    
+                    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+                    with open(cache_file, 'w+') as f:
+                        writer = csv.writer(f)
+                        writer.writerow([undirected_scid, json.dumps(recovered_chan)])
+
                 direction = int(not bool(int(scid[-1:])))
 
                 if direction == 0:
-                    recovered_data = chan_info["node1_policy"]
+                    recovered_data = recovered_chan["node1_policy"]
                 else:
-                    recovered_data = chan_info["node2_policy"]
+                    recovered_data = recovered_chan["node2_policy"]
                 
                 chan = channels.get(scid, None)
 
