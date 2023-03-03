@@ -154,7 +154,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
             # Attempt to recover missing edges
             if os.path.exists(cache_file) and os.stat(cache_file).st_size > 0:
                 with open(cache_file, 'r') as f:
-                    reader = csv.reader(f, quoting=csv.QUOTE_NONE)
+                    reader = csv.reader(f)
                     channels_cache = {rows[0]:json.loads(rows[1]) for rows in reader}
             else:
                 channels_cache = dict()
