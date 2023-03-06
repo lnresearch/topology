@@ -160,7 +160,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
                 channels_cache = dict()
 
             os.makedirs(os.path.dirname(cache_file), exist_ok=True) 
-            with open(cache_file, 'w') as f:
+            with open(cache_file, 'a') as f:
                 for scid in tqdm(unmatched, desc="Attempting to recover missing edges"):
                     undirected_scid = scid[:-2]
                     if undirected_scid in channels_cache:
