@@ -210,10 +210,11 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
                             "destination": chan["source"],
                             "timestamp": chan["timestamp"],
                             "features": chan["features"],
-                            "fee_base_msat": recovered_data["fee_base_msat"],
-                            "fee_proportional_millionths": recovered_data["fee_rate_milli_msat"],
-                            "htlc_minimum_msat": recovered_data["min_htlc"],
-                            "cltv_expiry_delta": recovered_data["time_lock_delta"] }
+                            "fee_base_msat": int(recovered_data["fee_base_msat"]),
+                            "fee_proportional_millionths": int(recovered_data["fee_rate_milli_msat"]),
+                            "htlc_minimum_msat": int(recovered_data["min_htlc"]),
+                            "cltv_expiry_delta": int(recovered_data["time_lock_delta"]) 
+                            }
 
                         node = nodes.get(chan["destination"], None)
                         if node is None:
