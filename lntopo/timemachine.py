@@ -84,7 +84,7 @@ def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
             chan["timestamp"] = ts
             chan["fee_base_msat"] = m.fee_base_msat
             chan["fee_proportional_millionths"] = m.fee_proportional_millionths
-            chan["htlc_minimim_msat"] = m.htlc_minimum_msat
+            chan["htlc_minimum_msat"] = m.htlc_minimum_msat
             if m.htlc_maximum_msat:
                 chan["htlc_maximum_msat"] = m.htlc_maximum_msat
             chan["cltv_expiry_delta"] = m.cltv_expiry_delta
