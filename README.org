@@ -165,7 +165,7 @@ missing gossip messages to backfill the datasets. If you have found
 missing gossip messages please open an issue or a PR on this
 repository.
 
-![Histogram of gossip messages over time](./message-hist.svg)
+![Histogram of gossip messages over time](./message-hist.svg "Histogram of gossip messages over time")
 
 * Citing a Dataset in your Publication
 
