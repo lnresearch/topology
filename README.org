@@ -106,7 +106,7 @@ dataset.
 | [[https://storage.googleapis.com/lnresearch/gossip-20210104.gsp.bz2][gossip-20210104.gsp.bz2]] | 992199372dfb5cb1fa5e305c5ef4f2604f591798d522fc0576dc8de32315c79b |            |
 | [[https://storage.googleapis.com/lnresearch/gossip-20210908.gsp.bz2][gossip-20210908.gsp.bz2]] | 0ba0b31c12c4aec7f1255866acef485e239d54dedde99f4905cf869ec57804c1 |            |
 | [[https://storage.googleapis.com/lnresearch/gossip-20220823.gsp.bz2][gossip-20220823.gsp.bz2]] | cb260b0d7d3633db3b267256e43b974d1ecbcd403ab559a80f5e80744578777d |            |
-| [[https://storage.googleapis.com/lnresearch/gossip-20220924.gsp.bz2][gossip-20230924.gsp.bz2]] | b6298fea4dd468e9f6857ab844993363143515b18f9e8c8278f33c601c058e78 | 35'984'848 |
+| [[https://storage.googleapis.com/lnresearch/gossip-20230924.gsp.bz2][gossip-20230924.gsp.bz2]] | b6298fea4dd468e9f6857ab844993363143515b18f9e8c8278f33c601c058e78 | 35'984'848 |
 |-------------------------+------------------------------------------------------------------+------------|
 
 ** Data Coverage
@@ -165,7 +165,7 @@ missing gossip messages to backfill the datasets. If you have found
 missing gossip messages please open an issue or a PR on this
 repository.
 
-![Histogram of gossip messages over time](./message-hist.svg "Histogram of gossip messages over time")
+![](message-hist.svg "Histogram of gossip messages over time")
 
 * Citing a Dataset in your Publication
 
