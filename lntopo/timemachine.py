@@ -8,7 +8,9 @@ from tqdm import tqdm
 from datetime import datetime
 import json
 from networkx.readwrite import json_graph
-
+import requests
+import os
+import csv 
 
 @click.group()
 def timemachine():
@@ -19,7 +21,8 @@ def timemachine():
 @click.argument("dataset", type=DatasetFile())
 @click.argument("timestamp", type=int, required=False)
 @click.option('--fmt', type=click.Choice(['dot', 'gml', 'graphml', 'json'], case_sensitive=False))
-def restore(dataset, timestamp=None, fmt='dot'):
+@click.option('--fix_missing', type=click.Choice(['recover','filter'], case_sensitive=False))
+def restore(dataset, timestamp=None, fmt='dot', fix_missing=None):
     """Restore reconstructs the network topology at a specific time in the past.
 
     Restore replays gossip messages from a dataset and reconstructs
@@ -34,6 +37,7 @@ def restore(dataset, timestamp=None, fmt='dot'):
     cutoff = timestamp - 2 * 7 * 24 * 3600
     channels = {}
     nodes = {}
+    cache_file = "./data/channels_cache.csv"
 
     # Some target formats do not suport UTF-8 aliases.
     codec = 'UTF-8' if fmt in ['dot'] else 'ASCII'
@@ -123,8 +127,6 @@ def restore(dataset, timestamp=None, fmt='dot'):
     for scid in todelete:
         del channels[scid]
 
-    nodes = [n for n in nodes.values() if n["in_degree"] > 0 or n['out_degree'] > 0]
-
     if len(channels) == 0:
         print(
             "ERROR: no channels are left after pruning, make sure to select a"
@@ -132,6 +134,119 @@ def restore(dataset, timestamp=None, fmt='dot'):
         )
         sys.exit(1)
 
+    if fix_missing is not None:
+        # If fix_missing is set, find channels that don't have edge data for both directions
+        unmatched = []
+        removed = []
+        for scid, chan in tqdm(channels.items(), desc="Finding unmatched channels"):
+           
+            if scid[-2:] == "/0":
+                opposite_scid = scid[:-2] + "/1"
+            elif scid[-2:] == "/1":
+                opposite_scid = scid[:-2] + "/0"
+            else:
+                raise Exception("ERROR: unknown scid format.")
+           
+            if opposite_scid not in channels:
+                unmatched.append(scid)
+
+        if fix_missing == "recover":
+            # Attempt to recover missing edges
+            if os.path.exists(cache_file) and os.stat(cache_file).st_size > 0:
+                with open(cache_file, 'r') as f:
+                    reader = csv.reader(f)
+                    channels_cache = {rows[0]:json.loads(rows[1]) for rows in reader}
+            else:
+                channels_cache = dict()
+
+            os.makedirs(os.path.dirname(cache_file), exist_ok=True) 
+            with open(cache_file, 'a') as f:
+                for scid in tqdm(unmatched, desc="Attempting to recover missing edges"):
+                    undirected_scid = scid[:-2]
+                    if undirected_scid in channels_cache:
+                        # If possible, retrieve edge data from the cache file
+                        recovered_chan = channels_cache[undirected_scid]
+                    else:
+                        # Else, request edge data from a LN explorer and save it in the cache file
+                        scid_elements = [ int(i) for i in undirected_scid.split("x") ]
+                        converted_scid = scid_elements[0] << 40 | scid_elements[1] << 16 | scid_elements[2]
+                        url = "https://1ml.com/channel/" + str(converted_scid) + "/json"
+                        resp = requests.get(url)
+
+                        if resp.status_code == 200:
+                            recovered_chan = resp.json()
+                        else:
+                            raise Exception("ERROR: unable to retrieve channel.")
+
+                        writer = csv.writer(f)
+                        writer.writerow([undirected_scid, json.dumps(recovered_chan)])
+
+                    direction = int(not bool(int(scid[-1:])))
+
+                    if direction == 0:
+                        recovered_data = recovered_chan["node1_policy"]
+                    else:
+                        recovered_data = recovered_chan["node2_policy"]
+                    
+                    chan = channels.get(scid, None)
+
+                    if not all(recovered_data.values()):
+                        # If no useful data could be found, remove the channel
+                        node = nodes.get(chan["source"], None)
+                        if node is None:
+                            continue
+                        node["out_degree"] -= 1
+                        node = nodes.get(chan["destination"], None)
+                        if node is None:
+                            continue
+                        node["in_degree"] -= 1
+                        removed.append(channels[scid])
+                        del channels[scid]
+                    
+                    else:
+                        # Add recovered edge to the graph
+                        channels[scid[:-1] + str(direction)] = {
+                            "source": chan["destination"],
+                            "destination": chan["source"],
+                            "timestamp": chan["timestamp"],
+                            "features": chan["features"],
+                            "fee_base_msat": int(recovered_data["fee_base_msat"]),
+                            "fee_proportional_millionths": int(recovered_data["fee_rate_milli_msat"]),
+                            "htlc_minimum_msat": int(recovered_data["min_htlc"]),
+                            "cltv_expiry_delta": int(recovered_data["time_lock_delta"]) 
+                            }
+
+                        node = nodes.get(chan["destination"], None)
+                        if node is None:
+                            continue
+                        node["out_degree"] += 1
+                        node = nodes.get(chan["source"], None)
+                        if node is None:
+                            continue
+                        node["in_degree"] += 1
+
+        if fix_missing == "filter":
+            # Remove channels that don"t have edge data for both directions
+            for scid in tqdm(unmatched, desc="Removing unmatched edges from the graph"):
+                chan = channels.get(scid, None)
+                node = nodes.get(chan["source"], None)
+                if node is None:
+                    continue
+                node["out_degree"] -= 1
+                node = nodes.get(chan["destination"], None)
+                if node is None:
+                    continue
+                node["in_degree"] -= 1
+                removed.append(channels[scid])
+                del channels[scid]
+
+
+        print('WARNING:', len(removed), "channels were removed from the graph due to missing edges")
+
+
+    nodes = [n for n in nodes.values() if n["in_degree"] > 0 or n["out_degree"] > 0]
+
+    # Export graph
     g = nx.DiGraph()
     for n in nodes:
         g.add_node(n["id"], **n)
